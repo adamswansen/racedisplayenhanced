@@ -304,32 +304,38 @@ export function applyResponsiveScaling(container, options = {}) {
 export function createResponsiveObserver(container, callback, options = {}) {
   let resizeTimeout;
   const { debounceMs = 150 } = options;
-  
-  const handleResize = () => {
+
+  const scheduleResize = (extraDelay = 0) => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       const result = applyResponsiveScaling(container, options);
       if (callback) callback(result);
-    }, debounceMs);
+    }, debounceMs + extraDelay);
   };
-  
+
+  const handleResize = () => {
+    scheduleResize();
+  };
+
+  const handleOrientationChange = () => {
+    // Allow the viewport to settle before recalculating sizes
+    scheduleResize(100);
+  };
+
   // Listen for resize events
   window.addEventListener('resize', handleResize);
-  
+
   // Listen for orientation changes
-  window.addEventListener('orientationchange', () => {
-    // Small delay to allow viewport to update
-    setTimeout(handleResize, 100);
-  });
-  
+  window.addEventListener('orientationchange', handleOrientationChange);
+
   // Initial application
   handleResize();
-  
+
   // Return cleanup function
   return () => {
     clearTimeout(resizeTimeout);
     window.removeEventListener('resize', handleResize);
-    window.removeEventListener('orientationchange', handleResize);
+    window.removeEventListener('orientationchange', handleOrientationChange);
   };
 }
 
