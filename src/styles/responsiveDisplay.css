@@ -1,0 +1,315 @@
+/* ──────────────────────────────────────────────────────────────
+   responsiveDisplay.css
+   ------------------------------------------------------------------
+   CSS for responsive race display templates with viewport scaling,
+   orientation support, and dynamic text sizing.
+   ------------------------------------------------------------------ */
+
+/* ──────────── Base Setup ──────────── */
+:root {
+  /* Base dimensions for 16:9 landscape design */
+  --base-width: 1920px;
+  --base-height: 1080px;
+  
+  /* Typography scale using clamp for responsive sizing */
+  --font-xs: clamp(12px, 1.5vw, 18px);
+  --font-sm: clamp(14px, 2vw, 24px);
+  --font-md: clamp(18px, 3vw, 36px);
+  --font-lg: clamp(24px, 4vw, 48px);
+  --font-xl: clamp(32px, 5vw, 64px);
+  --font-xxl: clamp(40px, 6vw, 80px);
+  
+  /* Spacing scale using viewport units */
+  --spacing-1: clamp(4px, 0.4vmin, 8px);
+  --spacing-2: clamp(8px, 0.8vmin, 16px);
+  --spacing-3: clamp(12px, 1.2vmin, 24px);
+  --spacing-4: clamp(16px, 1.6vmin, 32px);
+  --spacing-5: clamp(20px, 2vmin, 40px);
+  --spacing-6: clamp(24px, 2.4vmin, 48px);
+  --spacing-8: clamp(32px, 3.2vmin, 64px);
+  --spacing-10: clamp(40px, 4vmin, 80px);
+  
+  /* Dynamic display properties (set by JavaScript) */
+  --display-width: 100vw;
+  --display-height: 100vh;
+  --display-scale: 1;
+  --display-offset-x: 0px;
+  --display-offset-y: 0px;
+  --display-orientation: landscape;
+}
+
+/* ──────────── Responsive Container ──────────── */
+.responsive-display-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  
+  /* Use CSS custom properties for dynamic scaling */
+  --container-width: var(--display-width, 100vw);
+  --container-height: var(--display-height, 100vh);
+}
+
+.responsive-display-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--base-width);
+  height: var(--base-height);
+  
+  /* Applied by JavaScript based on viewport */
+  transform: translate(var(--display-offset-x, 0), var(--display-offset-y, 0)) 
+             scale(var(--display-scale, 1));
+  transform-origin: top left;
+  
+  /* Smooth transitions for responsive changes */
+  transition: transform 0.2s ease-out;
+}
+
+/* ──────────── Template Elements ──────────── */
+.layout-root {
+  position: relative !important;
+  width: var(--base-width) !important;
+  height: var(--base-height) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* Text elements with responsive sizing */
+[data-placeholder] {
+  /* Base responsive text sizing */
+  font-size: var(--font-md);
+  line-height: 1.2;
+  
+  /* Smart text overflow handling */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  
+  /* Smooth font size transitions */
+  transition: font-size 0.15s ease-out;
+  
+  /* Ensure absolute positioning works */
+  position: absolute;
+}
+
+/* Typography size variants */
+[data-placeholder].text-xs { font-size: var(--font-xs); }
+[data-placeholder].text-sm { font-size: var(--font-sm); }
+[data-placeholder].text-md { font-size: var(--font-md); }
+[data-placeholder].text-lg { font-size: var(--font-lg); }
+[data-placeholder].text-xl { font-size: var(--font-xl); }
+[data-placeholder].text-xxl { font-size: var(--font-xxl); }
+
+/* Smart text fitting classes */
+.text-fit-shrink {
+  white-space: nowrap;
+  /* Font size will be dynamically adjusted by JavaScript */
+}
+
+.text-fit-wrap {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.text-fit-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ──────────── Responsive Images ──────────── */
+.responsive-display-content img {
+  /* Maintain aspect ratio and responsiveness */
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
+  
+  /* Smooth scaling */
+  transition: transform 0.2s ease-out;
+}
+
+/* Background images with responsive sizing */
+.layout-root[style*="background-image"] {
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* ──────────── Orientation-Specific Styles ──────────── */
+@media (orientation: portrait) {
+  :root {
+    /* Adjust typography for portrait mode */
+    --font-xs: clamp(10px, 2vw, 16px);
+    --font-sm: clamp(12px, 2.5vw, 20px);
+    --font-md: clamp(16px, 3.5vw, 28px);
+    --font-lg: clamp(20px, 4.5vw, 36px);
+    --font-xl: clamp(24px, 5.5vw, 44px);
+    --font-xxl: clamp(28px, 6.5vw, 52px);
+  }
+}
+
+@media (orientation: landscape) {
+  :root {
+    /* Standard landscape typography */
+    --font-xs: clamp(12px, 1.5vw, 18px);
+    --font-sm: clamp(14px, 2vw, 24px);
+    --font-md: clamp(18px, 3vw, 36px);
+    --font-lg: clamp(24px, 4vw, 48px);
+    --font-xl: clamp(32px, 5vw, 64px);
+    --font-xxl: clamp(40px, 6vw, 80px);
+  }
+}
+
+/* ──────────── Device-Specific Adjustments ──────────── */
+/* Mobile devices */
+@media (max-width: 768px) {
+  :root {
+    /* Slightly larger text on mobile for readability */
+    --font-xs: clamp(14px, 3vw, 20px);
+    --font-sm: clamp(16px, 3.5vw, 26px);
+    --font-md: clamp(20px, 4.5vw, 32px);
+    --font-lg: clamp(26px, 5.5vw, 42px);
+    --font-xl: clamp(32px, 6.5vw, 52px);
+    --font-xxl: clamp(38px, 7.5vw, 62px);
+  }
+  
+  .responsive-display-content {
+    /* Faster transitions on mobile */
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* Tablet devices */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :root {
+    /* Balanced sizing for tablets */
+    --font-xs: clamp(13px, 2vw, 19px);
+    --font-sm: clamp(15px, 2.5vw, 25px);
+    --font-md: clamp(19px, 3.5vw, 35px);
+    --font-lg: clamp(25px, 4.5vw, 47px);
+    --font-xl: clamp(33px, 5.5vw, 63px);
+    --font-xxl: clamp(41px, 6.5vw, 79px);
+  }
+}
+
+/* Large screens */
+@media (min-width: 1920px) {
+  :root {
+    /* Prevent text from becoming too large on huge screens */
+    --font-xs: clamp(18px, 1vw, 20px);
+    --font-sm: clamp(24px, 1.2vw, 28px);
+    --font-md: clamp(36px, 1.5vw, 40px);
+    --font-lg: clamp(48px, 1.8vw, 56px);
+    --font-xl: clamp(64px, 2.2vw, 72px);
+    --font-xxl: clamp(80px, 2.6vw, 88px);
+  }
+}
+
+/* ──────────── Animation Enhancements ──────────── */
+.responsive-display-content * {
+  /* Smooth property transitions */
+  transition-property: font-size, width, height, left, top, transform;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+}
+
+/* Prevent transitions during resize events */
+.responsive-display-container.resizing * {
+  transition: none !important;
+}
+
+/* ──────────── Debug Helpers ──────────── */
+.responsive-debug {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 9999;
+  border-radius: 4px;
+}
+
+.responsive-debug::before {
+  content: "Display: " var(--display-width) " × " var(--display-height) 
+           " | Scale: " var(--display-scale) 
+           " | Orientation: " var(--display-orientation);
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* ──────────── Accessibility ──────────── */
+@media (prefers-reduced-motion: reduce) {
+  .responsive-display-content,
+  .responsive-display-content * {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  [data-placeholder] {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* ──────────── Print Styles ──────────── */
+@media print {
+  .responsive-display-container {
+    width: 100%;
+    height: 100%;
+    background: white !important;
+  }
+  
+  .responsive-display-content {
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  :root {
+    /* Use point sizes for print */
+    --font-xs: 9pt;
+    --font-sm: 10pt;
+    --font-md: 12pt;
+    --font-lg: 14pt;
+    --font-xl: 18pt;
+    --font-xxl: 24pt;
+  }
+}
+
+/* ──────────── Utility Classes ──────────── */
+.fit-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.center-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.text-responsive {
+  font-size: var(--font-md);
+}
+
+.prevent-overflow {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.allow-wrap {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
