@@ -365,17 +365,6 @@ export function convertToResponsiveStyles(styles, orientation = 'auto') {
     }
   }
   
-  // Convert positioning and dimensions
-  ['width', 'height', 'left', 'top', 'margin-left', 'margin-top', 'padding'].forEach(property => {
-    if (styles[property]) {
-      const pixels = parseFloat(styles[property]);
-      if (!isNaN(pixels)) {
-        const unit = property.includes('width') || property.includes('left') ? 'vw' : 'vh';
-        responsiveStyles[property] = pixelsToViewport(pixels, unit);
-      }
-    }
-  });
-  
   return responsiveStyles;
 }
 
